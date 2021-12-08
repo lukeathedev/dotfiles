@@ -1,0 +1,14 @@
+# alias md="mkdir -p"
+# alias ls="ls --color=auto"
+# alias la="ls -la --color=auto"
+# alias ll="ls -l --color=auto"
+
+alias vim="nvim"
+alias ed="emacs -nw"
+alias code="vscodium"
+
+alias cb='cbonsai -l -t 0.05 -i -w 1 -S -m "$(fortune)"'
+
+alias i3grid='python3 -m i3grid'
+
+alias conf='/usr/bin/git --git-dir=$HOME/.cfg/ --work-tree=$HOME'
