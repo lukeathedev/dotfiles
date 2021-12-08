@@ -1,0 +1,827 @@
+#+TITLE: Emacs SCE \lambda
+#+PROPERTY: header-args :emacs-lisp :tangle ~/.emacs.d/init.el
+
+* About
+
+Something I made.
+Handwritten by lukeathedev.
+
+* How to install
+
+Place this file in your '.emacs.d' directory, then
+open Emacs and do:
+
+ - M-x org-babel-tangle RET
+ - M-x load-file RET ~/.emacs.d/init.el RET
+ - SPC q q
+
+and reopen Emacs.
+
+'M-x' is usually equivalent to Alt-x.
+
+* Basics
+
+** Navigation
+
+Use the spacebar ('SPC') to access useful features.
+
+Opening a file, for instance, entails:
+
+ - SPC f f
+
+That is, pressing the spacebar followed by 'f' twice.
+
+* Startup
+
+#+begin_src emacs-lisp
+
+  ;; -*- lexical-binding: t; -*-
+
+  ;; Increase garbage collection threshold
+  (setq gc-cons-threshold (* 50 1000 1000))
+
+#+end_src
+
+* Packages
+
+#+begin_src emacs-lisp
+
+  (require 'package)
+  (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/" ) t)
+                                   ;; ("org"   . "https://orgmode.org/elpa/"  )))
+  (package-initialize)
+
+  (unless (package-installed-p 'use-package)
+    (package-refresh-contents)
+    (package-install 'use-package))
+
+  (require 'use-package)
+  (require 'use-package-ensure)
+  (setq use-package-always-ensure t)
+
+#+end_src
+
+** Utilities
+
+#+begin_src emacs-lisp
+
+  (use-package no-littering)
+
+  (use-package move-text
+    :config
+    (move-text-default-bindings))
+
+  (use-package diminish
+    :config
+    (diminish 'evil-collection-unimpaired-mode)
+    (diminish 'eldoc-mode)
+    (diminish 'visual-line-mode))
+
+  (use-package theme-looper)
+
+  (use-package popwin
+    :init
+    '(popwin:special-display-config
+    '(("*Miniedit Help*" :noselect t)
+      (help-mode :stick t)
+      (completion-list-mode :noselect t)
+      (compilation-mode)
+      (grep-mode :noselect t)
+      (occur-mode :noselect t)
+      ("*Pp Macroexpand Output*" :noselect t)
+      ("*Shell Command Output*")
+      ("*vc-diff*")
+      ("*vc-change-log*")
+      (" *undo-tree*" :width 60 :position right)
+      ("^\\*anything.*\\*$" :regexp t)
+      ("*slime-apropos*")
+      ("*slime-macroexpansion*")
+      ("*slime-description*")
+      ("*slime-compilation*" :noselect t)
+      ("*slime-xref*")
+      (sldb-mode :stick t)
+      (slime-repl-mode)
+      (slime-connection-list-mode)))
+    :config
+    (popwin-mode 1))
+
+  ;; Trim trailing whitespace
+  (use-package ws-butler
+    :diminish
+    :config
+    (ws-butler-global-mode))
+
+  ;; PDF Viewer
+  (use-package pdf-tools
+    :config
+    (pdf-tools-install))
+
+#+end_src
+
+** Evil mode
+
+#+begin_src emacs-lisp
+
+  (use-package evil
+    :init
+    (setq evil-want-keybinding    nil)
+    (setq evil-shift-width          2)
+    (setq evil-want-C-u-scroll      t)
+    (setq evil-split-window-below   t)
+    (setq evil-vsplit-window-right  t)
+    (setq evil-undo-system 'undo-redo)
+
+    :config
+    (evil-mode 1))
+
+  (use-package evil-commentary
+    :diminish
+    :after evil
+    :config
+    (evil-commentary-mode))
+
+  (use-package evil-collection
+    :diminish
+    :after evil
+    :config
+    (evil-collection-init))
+
+  (use-package evil-surround
+    :config
+    (global-evil-surround-mode))
+
+#+end_src
+
+** Completion
+
+#+begin_src emacs-lisp
+
+  (use-package ivy
+    :diminish
+    :init
+    (setq ivy-initial-inputs-alist nil) ;; Remove ^ on M-x
+    :bind (("C-s" . swiper)
+           :map ivy-minibuffer-map
+           ("C-j" . ivy-next-line    )
+           ("C-k" . ivy-previous-line)
+           :map ivy-switch-buffer-map
+           ("C-k" . ivy-previous-line     )
+           ("C-l" . ivy-done              )
+           ("C-d" . ivy-switch-buffer-kill)
+           :map ivy-reverse-i-search-map
+           ("C-k" . ivy-previous-line     )
+           ("C-d" . ivy-switch-buffer-kill))
+    :config
+    (ivy-mode))
+
+  ;; Get descriptions in ivy
+  (use-package ivy-rich
+    :diminish
+    :after ivy
+    :init
+    (setcdr (assq t ivy-format-functions-alist) #'ivy-format-function-line)
+    :config
+    (ivy-rich-mode 1))
+
+  (use-package counsel
+    :diminish
+    :after ivy
+    :config
+    (counsel-mode))
+
+  (use-package company
+    :diminish
+    :after ivy
+    :hook ((prog-mode text-mode) . company-mode)
+    :bind (:map company-active-map
+                ("<tab>" . company-complete-selection)
+                ("C-SPC" . company-complete))
+    :custom
+    (company-minimum-prefix-length 1)
+    (company-idle-delay 0.0))
+
+  (use-package prescient
+    :after ivy
+    :config
+    (prescient-persist-mode))
+
+  (use-package ivy-prescient
+    :after counsel
+    :config
+    (ivy-prescient-mode))
+
+  (use-package company-prescient
+    :after counsel
+    :config
+    (company-prescient-mode))
+
+#+end_src
+
+** Code
+
+#+begin_src emacs-lisp
+
+  ;; LaTeX
+  (use-package tex
+    :ensure auctex
+    :init
+    (setq TeX-PDF-mode   t)
+    (setq TeX-auto-save  t)
+    (setq TeX-parse-self t))
+
+  (use-package auctex-latexmk
+    :config
+    (auctex-latexmk-setup)
+    (setq auctex-latexmk-inherit-TeX-PDF-mode t))
+
+  (use-package company-auctex
+    :config
+    (company-auctex-init))
+
+  (use-package lsp-mode
+    :commands (lsp lsp-deferred)
+    :init
+    (setq lsp-keymap-prefix "C-c l")
+    :config
+    (lsp-enable-which-key-integration t))
+
+  (use-package lsp-ui :commands lsp-ui-mode
+    :init
+    (setq lsp-ui-doc-show-with-cursor nil)
+    :hook (lsp-mode . lsp-ui-mode))
+
+  (use-package lsp-ivy)
+
+  (use-package flycheck
+    :hook (lsp-mode . flycheck-mode))
+
+  ;; C language server
+  (use-package ccls)
+
+  ;; Haskell language
+  (use-package haskell-mode)
+  (use-package lsp-haskell
+    :hook (haskell-mode . lsp))
+
+#+end_src
+
+** Projects
+
+#+begin_src emacs-lisp
+
+  (use-package projectile
+    :diminish
+    :config
+    (projectile-mode)
+    :custom ((projectile-completion-system 'ivy)))
+
+#+end_src
+
+** Org mode
+
+#+begin_src emacs-lisp
+
+  (require 'org-tempo)
+
+  (add-to-list 'org-structure-template-alist '("shs" . "src shell"     ))
+  (add-to-list 'org-structure-template-alist '("eee" . "src emacs-lisp"))
+  (add-to-list 'org-structure-template-alist '("pyy" . "src python"    ))
+
+#+end_src
+
+** Shell
+
+#+begin_src emacs-lisp
+
+  (use-package vterm)
+
+#+end_src
+
+* User settings
+
+** Fonts
+
+#+begin_src emacs-lisp
+
+  (defun setfonts()
+    (set-face-attribute 'default        nil
+            :font "SF Mono Nerd Font"
+            :weight 'normal
+            :height 170)
+
+    (set-face-attribute 'fixed-pitch    nil
+            :font "SF Mono Nerd Font"
+            :weight 'normal
+            :height 170)
+
+    (set-face-attribute 'variable-pitch nil
+            :font "SF Mono Nerd Font"
+            :weight 'normal
+            :height 170))
+
+  (unless (daemonp)
+    (setfonts))
+
+  (add-hook 'after-make-frame-functions
+            (lambda (frame)
+              (select-frame frame)
+              (when (display-graphic-p frame)
+                (setfonts))))
+
+#+end_src
+
+** Theme
+
+#+begin_src emacs-lisp
+
+  (use-package doom-themes
+    :config
+    (load-theme 'doom-tomorrow-day t))
+
+#+end_src
+
+** UI settings
+
+#+begin_src emacs-lisp
+
+  (menu-bar-mode   -1)
+  (tool-bar-mode   -1)
+  (scroll-bar-mode -1)
+  (tooltip-mode    -1)
+
+  (global-hl-line-mode 1)
+
+  (setq inhibit-startup-message t)
+  (setq use-dialog-box nil)
+
+  ;; Line numbers on appropriate modes
+  (dolist (mode '(text-mode-hook
+                  prog-mode-hook))
+    (add-hook mode (lambda () (display-line-numbers-mode 1))))
+  (global-visual-line-mode t)
+
+  ;; Better scrolling
+  (setq scroll-conservatively 10)
+  (setq scroll-margin 7)
+
+  (setq display-time-default-load-average nil)
+  (display-time-mode   )
+  (column-number-mode  )
+  (size-indication-mode)
+
+#+end_src
+
+** Modeline
+
+#+begin_src emacs-lisp
+
+   ;; https://emacs.stackexchange.com/questions/5529/how-to-right-align-some-items-in-the-modeline
+  (defun simple-mode-line-render (left right)
+    "Return a string of `window-width' length.
+  Containing LEFT, and RIGHT aligned respectively."
+    (let ((available-width
+          (- (window-total-width)
+              (+ (length (format-mode-line left))
+                (length (format-mode-line right))))))
+      (append left
+              (list (format (format "%%%ds" available-width) ""))
+              right)))
+
+  (setq-default
+  mode-line-format
+  '((:eval
+      (simple-mode-line-render
+      ;; Left.
+      (quote ("%e "
+              ;; evil-mode-line-tag
+              mode-line-buffer-identification
+              " [%*%@]"
+              " %l:%C %o"))
+      ;; Right.
+      (quote ("%I"
+              mode-line-frame-identification
+              mode-line-modes
+              mode-line-misc-info))))))
+
+#+end_src
+
+** Variables and hooks
+
+#+begin_src emacs-lisp
+
+    ;; The backslash escaping makes it look weird, but trust me it looks good
+    (setq initial-scratch-message
+  "
+  ;;
+  ;;                ___           ___           ___
+  ;;               /  /\\         /  /\\         /  /\\
+  ;;              /  /:/_       /  /:/        /  /:/_
+  ;;             /  /:/ /\\     /  /:/        /  /:/ /\\
+  ;;            /  /:/ /::\\   /  /:/  ___   /  /:/ /:/_
+  ;;           /__/:/ /:/\\:\\ /__/:/  /  /\\ /__/:/ /:/ /\\
+  ;;           \\  \\:\\/:/~/:/ \\  \\:\\ /  /:/ \\  \\:\\/:/ /:/
+  ;;            \\  \\::/ /:/   \\  \\:\\  /:/   \\  \\::/ /:/
+  ;;             \\__\\/ /:/     \\  \\:\\/:/     \\  \\:\\/:/
+  ;;               /__/:/       \\  \\::/       \\  \\::/
+  ;;               \\__\\/         \\__\\/         \\__\\/
+  ;;       ___           ___           ___           ___           ___
+  ;;      /  /\\         /__/\\         /  /\\         /  /\\         /  /\\
+  ;;     /  /:/_       |  |::\\       /  /::\\       /  /:/        /  /:/_
+  ;;    /  /:/ /\\      |  |:|:\\     /  /:/\\:\\     /  /:/        /  /:/ /\\
+  ;;   /  /:/ /:/_   __|__|:|\\:\\   /  /:/~/::\\   /  /:/  ___   /  /:/ /::\\
+  ;;  /__/:/ /:/ /\\ /__/::::| \\:\\ /__/:/ /:/\\:\\ /__/:/  /  /\\ /__/:/ /:/\\:\\
+  ;;  \\  \\:\\/:/ /:/ \\  \\:\\~~\\__\\/ \\  \\:\\/:/__\\/ \\  \\:\\ /  /:/ \\  \\:\\/:/~/:/
+  ;;   \\  \\::/ /:/   \\  \\:\\        \\  \\::/       \\  \\:\\  /:/   \\  \\::/ /:/
+  ;;    \\  \\:\\/:/     \\  \\:\\        \\  \\:\\        \\  \\:\\/:/     \\__\\/ /:/
+  ;;     \\  \\::/       \\  \\:\\        \\  \\:\\        \\  \\::/        /__/:/
+  ;;      \\__\\/         \\__\\/         \\__\\/         \\__\\/         \\__\\/
+  ;;
+
+  ")
+
+
+    ;; Tabs to spaces
+    (setq-default tab-width          2
+                  indent-tabs-mode nil
+                  c-basic-offset     2)
+
+    (setq custom-safe-themes t)
+    (setq make-backup-files nil)
+
+    ;; Replace yes/no with y/n
+    (defalias 'yes-or-no-p 'y-or-n-p)
+
+    (electric-indent-mode -1)
+    (electric-pair-mode   1)
+
+    ;; Default to text file for new buffers
+    (setq-default major-mode #'text-mode)
+
+    ;; Make dired use single buffer
+    (setf dired-kill-when-opening-new-dired-buffer t)
+
+    ;; Disable shell confirm prompt
+    (add-hook 'vterm-mode-hook #'(lambda () (setq kill-buffer-query-functions nil)))
+
+    ;; Language specific
+    (add-hook 'c-mode-hook #'(lambda ()
+                               (setq compile-command (concat (projectile-project-root) "build.sh"))
+                               (lsp)))
+
+#+end_src
+
+* Keybindings
+
+** Packages
+
+#+begin_src emacs-lisp
+
+  (use-package general
+    :config
+    (general-evil-setup t))
+
+  (use-package which-key
+    :diminish
+    :init
+    (setq which-key-idle-delay           0.35)
+    (setq which-key-idle-secondary-delay 0.05)
+    :config
+    (which-key-mode))
+
+#+end_src
+
+** Globals
+
+#+begin_src emacs-lisp
+
+  ;; Make ESC quit prompts
+  (global-set-key (kbd "<escape>") 'keyboard-escape-quit)
+
+  ;; Use Ctrl+ and Ctrl- to change zoom
+  (global-set-key (kbd "C-=") 'text-scale-increase)
+  (global-set-key (kbd "C--") 'text-scale-decrease)
+
+#+end_src
+
+** Leader key
+
+#+begin_src emacs-lisp
+
+  (general-create-definer sce/leader
+    :prefix "SPC")
+
+  (sce/leader 'normal 'override
+    ""  '(nil             :which-key "S P A C E")
+    "," '(counsel-ibuffer :which-key "buffers"  )
+    "." '(dired-jump      :which-key "browse"   )
+    "b" '(:ignore t       :which-key "buffer"   )
+    "e" '(:ignore t       :which-key "eval"     )
+    "f" '(:ignore t       :which-key "file"     )
+    "h" '(:ignore t       :which-key "help"     )
+    "m" '(:ignore t       :which-key "modify"   )
+    "o" '(:ignore t       :which-key "open"     )
+    "p" '(:ignore t       :which-key "project"  )
+    "q" '(:ignore t       :which-key "quit"     )
+    "w" '(:ignore t       :which-key "window"   ))
+
+  (sce/leader 'normal 'override
+    "SPC" '(execute-extended-command :which-key "run"))
+
+#+end_src
+
+** Categories
+
+*** Buffer
+
+#+begin_src emacs-lisp
+
+  (sce/leader 'normal 'override
+    "b k" '(kill-current-buffer :which-key "kill")
+    "b n" '(next-buffer         :which-key "next")
+    "b p" '(previous-buffer     :which-key "prev")
+    "b s" '(save-buffer         :which-key "save"))
+
+#+end_src
+
+*** Code
+
+#+begin_src emacs-lisp
+
+  (sce/leader 'normal 'override
+    "c c" '(compile             :which-key "compile"   )
+    "c f" '(lsp-format-buffer   :which-key "format"    )
+    "c k" '(lsp-find-definition :which-key "definition")
+    "c r" '(lsp-rename          :which-key "rename"    ))
+
+#+end_src
+
+*** Eval
+
+#+begin_src emacs-lisp
+
+  (defun sce/org-reload-config ()
+    (interactive)
+    (org-babel-tangle)
+    (load-file "~/.emacs.d/init.el"))
+
+  (sce/leader 'normal 'override
+    "e b" '(eval-buffer           :which-key "buffer")
+    "e c" '(sce/org-reload-config :which-key "config"))
+
+#+end_src
+
+*** File
+
+#+begin_src emacs-lisp
+
+  (sce/leader 'normal 'override
+    "f f" '(find-file       :which-key "find"  )
+    "f n" '(evil-buffer-new :which-key "new"   )
+    "f r" '(counsel-recentf :which-key "recent")
+    "f s" '(save-buffer     :which-key "save"  ))
+
+#+end_src
+
+*** Help
+
+#+begin_src emacs-lisp
+
+  (sce/leader 'normal 'override
+    "h f" '(describe-function :which-key "fun" )
+    "h F" '(describe-face     :which-key "font")
+    "h h" '(help              :which-key "help")
+    "h k" '(describe-key      :which-key "key" )
+    "h v" '(describe-variable :which-key "var" ))
+
+#+end_src
+
+*** Modify
+
+#+begin_src emacs-lisp
+
+  (defun sce/reload-config ()
+    (interactive)
+    (load-file "~/.emacs.d/init.el"))
+
+  (sce/leader 'normal 'override
+    "m r" '(sce/reload-config         :which-key "reload")
+    "m t" '(theme-looper-select-theme :which-key "theme"))
+
+#+end_src
+
+*** Open
+
+#+begin_src emacs-lisp
+
+  (sce/leader 'normal 'override
+    "o t" '(vterm-other-window :which-key "terminal"))
+
+#+end_src
+
+*** Project
+
+#+begin_src emacs-lisp
+
+  (sce/leader 'normal 'override
+    "p a" '(projectile-add-known-project :which-key "add"  )
+    "p c" '(projectile-kill-buffers      :which-key "close")
+    "p f" '(projectile-find-file         :which-key "find" )
+    "p p" '(projectile-switch-project    :which-key "open" ))
+
+#+end_src
+
+*** Quit
+
+#+begin_src emacs-lisp
+
+  (sce/leader 'normal 'override
+    "q f" '(delete-frame            :which-key "frame")
+    "q q" '(save-buffers-kill-emacs :which-key "emacs"))
+
+#+end_src
+
+*** Window
+
+#+begin_src emacs-lisp
+
+  (defun sce/kill-buffer-or-window ()
+    (interactive)
+    (if (window-parent)
+        (kill-buffer-and-window)
+      (kill-buffer)))
+
+  (sce/leader 'normal 'override
+    "w s" '(evil-window-split         :which-key "hsplit")
+    "w v" '(evil-window-vsplit        :which-key "vsplit")
+    "w x" '(sce/kill-buffer-or-window :which-key "delete")
+    "w c" '(evil-window-delete        :which-key "close" )
+
+    "w h" '(evil-window-left  :which-key "left" )
+    "w j" '(evil-window-down  :which-key "down" )
+    "w k" '(evil-window-up    :which-key "up"   )
+    "w l" '(evil-window-right :which-key "right")
+
+    "w H" '(evil-window-move-far-left    :which-key "move left" )
+    "w J" '(evil-window-move-very-bottom :which-key "move down" )
+    "w K" '(evil-window-move-very-top    :which-key "move up"   )
+    "w L" '(evil-window-move-far-right   :which-key "move right"))
+
+#+end_src
+
+* Splash screen
+
+#+begin_src emacs-lisp
+
+  ;; Inspired by https://github.com/rougier/emacs-splash
+  ;; and         https://github.com/emacs-dashboard
+
+  (use-package hide-mode-line)
+
+  (defgroup splash-screen nil
+    "A minimalist splash-screen")
+
+  (define-derived-mode splash-screen-mode special-mode "Splash Screen"
+    :group 'splash-screen
+    :syntax-table nil
+    :abbrev-table nil
+    (buffer-disable-undo)
+    (ivy-mode 1)
+    (hide-mode-line-mode)
+    (setq frame-title-format '("GNU Emacs"))
+    (setq evil-normal-state-cursor '(nil))
+    (display-line-numbers-mode -1)
+    (setq inhibit-startup-screen   t
+          buffer-read-only         t
+          cursor-type            nil
+          truncate-lines           t))
+
+  (defconst splash-buffer-name "*splash*"
+    "splash-screen buffer name")
+
+  (defun display-splash ()
+    (interactive)
+    (let* ((splash-buffer (get-buffer-create splash-buffer-name))
+          (recover-session (and auto-save-list-file-prefix
+                                (file-directory-p (file-name-directory
+                                                    auto-save-list-file-prefix))))
+
+          (buffer-read-only nil)
+          (width    (   window-body-width  nil)   )
+          (height   (- (window-body-height nil) 1))
+          (p-center (- (/ height 2) 1))
+          (p-bottom (- height (/ height 2) 3)))
+
+      (with-current-buffer splash-buffer
+        (let ((buffer-read-only nil))
+          (erase-buffer)
+
+          ;; Local buffer settings
+          (if (one-window-p)
+              (setq mode-line-format nil))
+          (setq cursor-type           nil
+                vertical-scroll-bar   nil
+                horizontal-scroll-bar nil
+                fill-column           width)
+          (face-remap-add-relative 'link :underline nil)
+
+          ;; Vertical padding
+          (insert-char ?\n p-center)
+
+          ;; Central text
+          (insert-text-button " www.gnu.org "
+                              'action      (lambda (_) (browse-url "https://www.gnu.org"))
+                              'help-echo   "visit www.gnu.org"
+                              'follow-link t)
+          (center-line) (insert "\n")
+          (insert (concat
+                  (propertize "GNU Emacs" 'face 'bold)
+                  " " "version "
+                  (format "%d.%d" emacs-major-version emacs-minor-version)))
+          (center-line) (insert "\n")
+          (insert (propertize "Press S P A C E to enhance." 'face 'shadow))
+          (center-line)
+
+          ;; Vertical padding bottom
+          (insert-char ?\n p-bottom)
+
+          ;; Recover session button
+          (when recover-session
+            (delete-char -2)
+            (insert-text-button " [Recover session] "
+                                'action (lambda (_) (call-interactively 'recover-session))
+                                'help-echo "Recover previous session"
+                                'face 'warning
+                                'follow-link t)
+            (center-line) (insert "\n") (insert "\n"))
+
+          ;; Copyright text
+          (insert (propertize
+                  "GNU Emacs comes with ABSOLUTELY NO WARRANTY" 'face 'shadow))
+          (center-line) (insert "\n")
+          (insert (propertize
+                  (format "Copyright (C) %s Free Software Foundation, Inc." (get-year)) 'face 'shadow))
+          (center-line) (insert "\n")
+
+          ;; (insert (propertize
+          ;;         (format "Simple Config for Emacs (SCE) by lukeathedev." (get-year)) 'face 'shadow))
+          ;; (center-line) (insert "\n")
+
+          (local-set-key (kbd "<mouse-1>") 'mouse-set-point    )
+          (local-set-key (kbd "<mouse-2>") 'operate-this-button)
+
+          ;; (display-buffer-same-window splash-buffer nil)
+          (goto-char 0)
+          (read-only-mode t)
+          (splash-screen-mode)
+        ))))
+
+  (defun splash-screen-kill ()
+    (interactive)
+    (if (get-buffer splash-buffer-name)
+        (kill-buffer splash-buffer-name)))
+
+  (defun get-year ()
+    (shell-command-to-string "echo -n $(date +%Y)"))
+
+  (defun splash-resize-on-hook (&optional _)
+    (let ((space-win (get-buffer-window splash-buffer-name))
+          (frame-win (frame-selected-window)))
+      (when (and space-win
+                (not (window-minibuffer-p frame-win)))
+        (with-selected-window space-win
+          (display-splash)))))
+
+
+  (add-hook 'window-setup-hook
+            (lambda ()
+              (add-hook 'window-size-change-functions 'splash-resize-on-hook)
+              (splash-resize-on-hook)))
+
+  (add-hook 'change-major-mode-hook #'(lambda ()
+                                        (setq-default frame-title-format '("%b" " - GNU Emacs"))
+                                        (setq evil-normal-state-cursor '(box))))
+  ;;;###autoload
+  (when (< (length command-line-args) 2)
+      (add-hook 'after-init-hook (lambda ()
+                                  (display-splash)))
+      (add-hook 'emacs-startup-hook (lambda ()
+                                      (switch-to-buffer splash-buffer-name)
+                                      (goto-char (point-min))
+                                      (redisplay)
+                                      )))
+
+  ;; Supress startup messages in echo area
+  (run-with-idle-timer 0.05 nil (lambda () (message nil)))
+
+  (setq initial-buffer-choice (lambda () (get-buffer splash-buffer-name)))
+  (provide 'splash-screen)
+
+#+end_src
+
+* Update gc
+
+#+begin_src emacs-lisp
+
+  (setq gc-cons-threshold (* 2 1000 1000))
+
+#+end_src
