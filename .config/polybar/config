@@ -50,7 +50,8 @@ padding-right = 2
 module-margin-left = 2
 module-margin-right = 2
 
-font-0 = fixed:pixelsize=10;2
+#font-0 = fixed:pixelsize=10;2
+font-0 = "SF Pro Display:size=10:antialias=true;0"
 font-1 = unifont:fontformat=truetype:size=8:antialias=false;0
 font-2 = siji:pixelsize=10;1
 
@@ -77,11 +78,16 @@ scroll-down = #i3.prev
 cursor-click = pointer
 ; cursor-scroll = ns-resize
 
+# [module/hostname2]
+# type = custom/ipc
+# hook-0 = cat /etc/hostname
+# format-foreground = ${colors.primary}
+# initial = 1
+
 [module/hostname2]
-type = custom/ipc
-hook-0 = cat /etc/hostname
-format-foreground = ${colors.primary}
-initial = 1
+type = custom/text
+content = "lal@gentoo-ws"
+content-foreground = ${colors.primary}
 
 ; uses a LOT of cpu for some reason...
 [module/hostname]

@@ -5,6 +5,7 @@ if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]
 	source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
 fi
 
+export PATH=$XDG_CONFIG_HOME/local/bin:$PATH
 source $ZDOTDIR/aliases
 
 setopt HIST_SAVE_NO_DUPS

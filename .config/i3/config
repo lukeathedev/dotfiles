@@ -113,7 +113,7 @@ for_window [class="Pavucontrol"] floating enable
 
 # Commonly used programs
 bindsym $mod+u exec pcmanfm
-bindsym $mod+b exec brave
+bindsym $mod+b exec firefox
 bindsym $mod+c exec "vscodium"
 # bindsym $mod+c exec "emacsclient -c -a 'emacs'"
 
@@ -156,7 +156,7 @@ bindsym $mod+Shift+o mark --add "swapee"; mode "swap"
 # i3gaps
 smart_gaps on
 gaps inner 10
-border_radius 5
+# border_radius 5
 
 set $mode_gaps Gaps: (o)uter, (i)nner, (h)orizontal, (v)ertical, (t)op, (r)ight, (b)ottom, (l)eft
 set $mode_gaps_outer Outer Gaps: +|-|0 (local), Shift + +|-|0 (global)

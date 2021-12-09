@@ -12,3 +12,6 @@ alias cb='cbonsai -l -t 0.05 -i -w 1 -S -m "$(fortune)"'
 alias i3grid='python3 -m i3grid'
 
 alias conf='/usr/bin/git --git-dir=$HOME/.cfg/ --work-tree=$HOME'
+alias logo='clear && echo "\n" && neofetch'
+
+alias sudo='sudo '
