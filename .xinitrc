@@ -39,7 +39,7 @@ xset r rate 200 30
 setxkbmap -layout dvorak -option caps:escape
 imwheel -b 45 &
 
-# pulseeffects --gapplication-service &
+pulseeffects --gapplication-service &
 
 xscreensaver -no-splash &
 redshift &
