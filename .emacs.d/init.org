@@ -40,6 +40,9 @@ That is, pressing the spacebar followed by 'f' twice.
   ;; Increase garbage collection threshold
   (setq gc-cons-threshold (* 50 1000 1000))
 
+  ;; Disable compiler warnings
+  (setq-default warning-minimum-level :error)
+
 #+end_src
 
 * Packages
@@ -112,9 +115,9 @@ That is, pressing the spacebar followed by 'f' twice.
     (ws-butler-global-mode))
 
   ;; PDF Viewer
-  (use-package pdf-tools
-    :config
-    (pdf-tools-install))
+  ;; (use-package pdf-tools
+  ;;   :config
+  ;;   (pdf-tools-install))
 
 #+end_src
 
@@ -303,21 +306,24 @@ That is, pressing the spacebar followed by 'f' twice.
 
 #+begin_src emacs-lisp
 
+  ;; Add fonts directory
+  (setq bdf-directory-list '("/home/lal/.config/local/share/fonts"))
+
   (defun setfonts()
     (set-face-attribute 'default        nil
-            :font "SF Mono Nerd Font"
-            :weight 'normal
-            :height 170)
+      :font "SF Mono Nerd Font"
+      :weight 'normal
+      :height 170)
 
     (set-face-attribute 'fixed-pitch    nil
-            :font "SF Mono Nerd Font"
-            :weight 'normal
-            :height 170)
+      :font "SF Mono Nerd Font"
+      :weight 'normal
+      :height 170)
 
     (set-face-attribute 'variable-pitch nil
-            :font "SF Mono Nerd Font"
-            :weight 'normal
-            :height 170))
+      :font "SF Mono Nerd Font"
+      :weight 'normal
+      :height 170))
 
   (unless (daemonp)
     (setfonts))

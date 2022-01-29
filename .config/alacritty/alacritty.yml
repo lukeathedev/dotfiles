@@ -1,53 +1,40 @@
-# The 'Dark dimmed' colorscheme from Github.
-colors:
-  primary:
-    background: '#111111'
-    foreground: '#adbac7'
-  normal:
-    black:   '#2d333b'
-    red:     '#f47067'
-    green:   '#8ddb8c'
-    yellow:  '#f69d50'
-    blue:    '#6cb6ff'
-    magenta: '#dcbdfb'
-    cyan:    '#96d0ff'
-    white:   '#adbac7'
-  bright:
-    black:   '#768390'
-    red:     '#f47067'
-    green:   '#8ddb8c'
-    yellow:  '#f69d50'
-    blue:    '#6cb6ff'
-    magenta: '#dcbdfb'
-    cyan:    '#96d0ff'
-    white:   '#adbac7'
+# # The 'Dark dimmed' colorscheme from Github.
+# colors:
+#   # COLORSCHEME: iterm.yaml
+#   # Default colors
+#   primary:
+#     background: '0x101421'
+#     foreground: '0xfffbf6'
 
-# Configuration for Alacritty, the GPU enhanced terminal emulator.
+#   # Normal colors
+#   normal:
+#   # Bright colors
+#     black: '0x2e2e2e'
+#     red: '0xeb4129'
+#     green: '0xabe047'
+#     yellow: '0xf6c744'
+#     blue: '0x47a0f3'
+#     magenta: '0x7b5cb0'
+#     cyan: '0x64dbed'
+#     white: '0xe5e9f0'
 
-# Import additional configuration files
-#
-# Imports are loaded in order, skipping all missing files, with the importing
-# file being loaded last. If a field is already present in a previous import, it
-# will be replaced.
-#
-# All imports must either be absolute paths starting with `/`, or paths relative
-# to the user's home directory starting with `~/`.
-#import:
-#  - /path/to/alacritty.yml
+#   # Bright colors
+#   bright:
+#     black: '0x565656'
+#     red: '0xec5357'
+#     green: '0xc0e17d'
+#     yellow: '0xf9da6a'
+#     blue: '0x49a4f8'
+#     magenta: '0xa47de9'
+#     cyan: '0x99faf2'
+#     white: '0xffffff'
+#   cursor:
+#     background: '0xf0f0f0'
+#     foreground: '0x26282a'
 
-# Any items in the `env` entry below will be added as
-# environment variables. Some entries may override variables
-# set by alacritty itself.
-#env:
-  # TERM variable
-  #
-  # This value is used to set the `$TERM` environment variable for
-  # each instance of Alacritty. If it is not present, alacritty will
-  # check the local terminfo database and use `alacritty` if it is
-  # available, otherwise `xterm-256color` is used.
-  #TERM: alacritty
-
-# window:
+#   # Normal colors
+#   indexed_colors: []
+window:
   # Window dimensions (changes require restart)
   #
   # Number of lines/columns (not pixels) in the terminal. The number of columns
@@ -75,6 +62,9 @@ colors:
 
   # Spread additional padding evenly around the terminal content.
   #dynamic_padding: false
+  
+  # Opacity
+  opacity: 0.7
 
   # Window decorations
   #
@@ -99,10 +89,10 @@ colors:
   #startup_mode: Windowed
 
   # Window title
-  #title: Alacritty
+  title: DOS Prompt
 
   # Allow terminal applications to change Alacritty's window title.
-  #dynamic_title: true
+  dynamic_title: true
 
   # Window class (Linux/BSD only):
   #class:
@@ -174,7 +164,7 @@ font:
     #style: Bold Italic
 
   # Point size
-  size: 12.0
+  size: 13.0
 
   # Offset is the extra space around each character. `offset.y` can be thought
   # of as modifying the line spacing, and `offset.x` as modifying the letter
@@ -381,7 +371,8 @@ font:
 #
 # Window opacity as a floating point number from `0.0` to `1.0`.
 # The value `0.0` is completely transparent and `1.0` is opaque.
-background_opacity: 0.60
+# background_opacity: 0.7
+# background-opacity: 1.0
 
 #selection:
   # This string contains all characters that are used as separators for
@@ -744,14 +735,14 @@ cursor:
 # If the same trigger is assigned to multiple actions, all of them are executed
 # in the order they were defined in.
 key_bindings:
-  - { key: Paste,                                       action: Paste          }
-  - { key: Copy,                                        action: Copy           }
-  - { key: L,         mods: Control,                    action: ClearLogNotice }
-  - { key: L,         mods: Control, mode: ~Vi|~Search, chars: "\x0c"          }
-  - { key: PageUp,    mods: Shift,   mode: ~Alt,        action: ScrollPageUp,  }
-  - { key: PageDown,  mods: Shift,   mode: ~Alt,        action: ScrollPageDown }
-  - { key: Home,      mods: Shift,   mode: ~Alt,        action: ScrollToTop,   }
-  - { key: End,       mods: Shift,   mode: ~Alt,        action: ScrollToBottom }
+  - {key: Paste, action: Paste}
+  - {key: Copy, action: Copy}
+  - {key: L, mods: Control, action: ClearLogNotice}
+  - {key: L, mods: Control, mode: ~Vi|~Search, chars: "\f"}
+  - {key: PageUp, mods: Shift, mode: ~Alt, action: ScrollPageUp}
+  - {key: PageDown, mods: Shift, mode: ~Alt, action: ScrollPageDown}
+  - {key: Home, mods: Shift, mode: ~Alt, action: ScrollToTop}
+  - {key: End, mods: Shift, mode: ~Alt, action: ScrollToBottom}
 
   # Vi Mode
   #- { key: Space,  mods: Shift|Control, mode: Vi|~Search, action: ScrollToBottom          }
@@ -874,3 +865,30 @@ key_bindings:
 
   # Print all received window events.
   #print_events: false
+colors:
+  # COLORSCHEME: iterm.yaml
+  primary:
+    background: '0x101421'
+    foreground: '0xfffbf6'
+
+  # Normal colors
+  normal:
+    black: '0x2e2e2e'
+    red: '0xeb4129'
+    green: '0xabe047'
+    yellow: '0xf6c744'
+    blue: '0x47a0f3'
+    magenta: '0x7b5cb0'
+    cyan: '0x64dbed'
+    white: '0xe5e9f0'
+
+  # Bright colors
+  bright:
+    black: '0x565656'
+    red: '0xec5357'
+    green: '0xc0e17d'
+    yellow: '0xf9da6a'
+    blue: '0x49a4f8'
+    magenta: '0xa47de9'
+    cyan: '0x99faf2'
+    white: '0xffffff'

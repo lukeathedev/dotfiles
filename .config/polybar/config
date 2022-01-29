@@ -51,7 +51,7 @@ module-margin-left = 2
 module-margin-right = 2
 
 #font-0 = fixed:pixelsize=10;2
-font-0 = "SF Pro Display:size=10:antialias=true;0"
+font-0 = "SF Pro Display:size=10:antialias=true;3"
 font-1 = unifont:fontformat=truetype:size=8:antialias=false;0
 font-2 = siji:pixelsize=10;1
 
@@ -150,6 +150,8 @@ label = %time%
 type = internal/xkeyboard
 blacklist-0 = num lock
 label-layout = %name%
+# https://www.reddit.com/r/archlinux/comments/ahbgf6/polybar_xkeyboard_click_event/
+format = %{A1:/home/lal/.config/local/bin/setkb &:}<label-layout> <label-indicator>%{A}
 
 [module/date]
 type = internal/date

@@ -42,7 +42,7 @@ imwheel -b 45 &
 pulseeffects --gapplication-service &
 
 xscreensaver -no-splash &
-redshift &
+redshift -c .config/redshift/redshift.conf &
 # picom --vsync --backend glx &
 picom --experimental-backends &
 ~/.fehbg &

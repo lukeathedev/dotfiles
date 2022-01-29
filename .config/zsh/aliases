@@ -7,11 +7,17 @@ alias vim="nvim"
 alias ed="emacs -nw"
 alias code="vscodium"
 
-alias cb='cbonsai -l -t 0.05 -i -w 1 -S -m "$(fortune)"'
+alias cb='cbonsai -S -t 0.05 -m "$(fortune)"'
 
 alias i3grid='python3 -m i3grid'
 
 alias conf='/usr/bin/git --git-dir=$HOME/.cfg/ --work-tree=$HOME'
 alias logo='clear && echo "\n" && neofetch'
+alias dir='ranger'
 
 alias sudo='sudo '
+alias cmon='sudo $(fc -ln -1)'
+
+alias browse='pcmanfm . > /dev/null 2>&1'
+
+alias coolors='for x in {0..8}; do for i in {30..37}; do for a in {40..47}; do echo -ne "\e[$x;$i;$a""m\\\e[$x;$i;$a""m\e[0;37;40m "; done; echo; done; done; echo ""'
