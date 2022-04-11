@@ -29,5 +29,11 @@ Plug 'tpope/vim-unimpaired'
 Plug 'tpope/vim-repeat'
 Plug 'tpope/vim-speeddating'
 Plug 'tpope/vim-rsi'
+Plug 'camspiers/animate.vim'
 
 call plug#end()
+
+nnoremap <silent> <Up>  :call animate#window_delta_height(-5)<CR>
+nnoremap <silent> <Down>    :call animate#window_delta_height(5)<CR>
+nnoremap <silent> <Left>  :call animate#window_delta_width(5)<CR>
+nnoremap <silent> <Right> :call animate#window_delta_width(-5)<CR>
